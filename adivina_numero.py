@@ -28,7 +28,9 @@ def choose_difficulty():
         return DIFFICULTIES[choice]
 
     print("Opción inválida. Se usará la dificultad Fácil.")
-    return DIFFICULTIES["2"]
+    #-------------------------------------------------------------
+    # Te regresaba la opcion dos que era la dificultad media
+    return DIFFICULTIES["1"]
 
 
 def read_guess(minimum, maximum):
@@ -37,6 +39,8 @@ def read_guess(minimum, maximum):
         return int(raw_guess)
 
     print("La entrada debe ser un número entero.")
+
+
     return None
 
 
@@ -45,8 +49,11 @@ def calculate_score(attempts_used, maximum_attempts, won):
         return 0
 
     points = (maximum_attempts - attempts_used) * 10
-    if points < 0:
-        points = 0
+    #---------------------------------------------------------
+    # mejora adicional, le pusimos un minimo de puntos
+    if points <= 0:
+        points = 5
+    #---------------------------------------------------------
     return points
 
 
@@ -61,20 +68,37 @@ def play_round(settings):
         f"{settings['maximum']}. Tienes {settings['attempts']} intentos."
     )
 
-    while attempts_used <= settings["attempts"] and won is False:
+    #-------------------------------------------------------------------------------
+    # te daba un intento más de los que debería
+    while attempts_used <= (settings["attempts"])-1 and won is False:
         guess = read_guess(settings["minimum"], settings["maximum"])
         attempts_used += 1
 
         if guess is None:
             continue
+        #-------------------------------------------------------------------
+        # Si le damos un dato inválido no contamos el intento
         elif guess < settings["minimum"]:
             print("El número es menor que el rango permitido.")
+            (settings["attempts"])+=1
         elif guess > settings["maximum"]:
             print("El número es mayor que el rango permitido.")
-        elif guess < secret_number:
+            (settings["attempts"])+=1
+
+        #-------------------------------------------------------------------
+        # mejoramos las salidas sobre si es menor o mayor
+
+        elif guess < secret_number-20:
             print("Muy bajo.")
-        elif guess > secret_number:
+        elif guess > secret_number+20:
             print("Muy alto.")
+
+        elif guess < secret_number:
+            print("Bajo.")
+        elif guess > secret_number:
+            print("Alto.")
+
+        #-------------------------------------------------------------------
         else:
             print("¡Correcto!")
             won = True
@@ -128,11 +152,18 @@ def play_game(scores):
 
 
 def ask_to_play_again():
-    answer = input("\n¿Quieres jugar otra vez? (s/n): ").lower()
-    if answer == "s" or answer == "si" or answer == "sí":
-        return True
-    return False
+    #-------------------------------------------------------------------------
+    # manejamos para que sólo se cierre el programa sí el usuario pone que no
 
+    while True:
+        answer = input("\n¿Quieres jugar otra vez? (s/n): ").lower().strip()
+        if answer == "s" or answer == "si" or answer == "sí":
+            return True
+        elif answer == "n" or answer == "no":
+            return False
+        else:
+            print("No es una opción válida\n")
+    #-------------------------------------------------------------------------
 
 def main():
     print(f"=== {GAME_TITLE} ===")
@@ -146,5 +177,5 @@ def main():
 
     print("\nGracias por jugar.")
 
-
+#asd
 main()
